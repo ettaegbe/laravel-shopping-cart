@@ -1,0 +1,42 @@
+{
+    "name": "icemix/laravel-shopping-cart",
+    "description": "Laravel Shopping Cart",
+    "keywords": ["laravel", "shopping"],
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Etta Egbe Joseph",
+            "email": "ettaegbe40@gmail.com"
+        }
+    ],
+    "require": {
+
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.0|~6.0|~7.0",
+        "mockery/mockery": "~0.9.0",
+        "orchestra/testbench": "~3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Icemix\\LaravelShoppingCart\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Icemix\\Tests\\LaravelShoppingCart\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Icemix\\LaravelShoppingCart\\CartServiceProvider"
+            ],
+            "aliases": {
+                "Cart": "Icemix\\LaravelShoppingCart\\Facades\\Cart"
+            }
+        }
+    }
+}
