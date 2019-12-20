@@ -11,14 +11,23 @@ class CreateShoppingcartTable extends Migration
      */
     public function up()
     {
-        Schema::create(config('cart.database.table'), function (Blueprint $table) {
-            $table->string('identifier');
-            $table->string('instance');
-            $table->longText('content');
-            $table->nullableTimestamps();
+        if(Schema::hasTable(config('cart.database.table'))){
+            Schema::table(config('cart.database.table'), function (Blueprint $table) {
+                $table->string('identifier');
+                $table->string('instance');
+                $table->longText('content');
+                //$table->index(['identifier', 'instance']);
+            });
+        }else{
+            Schema::create(config('cart.database.table'), function (Blueprint $table) {
+                $table->string('identifier');
+                $table->string('instance');
+                $table->longText('content');
+                $table->nullableTimestamps();
 
-            $table->primary(['identifier', 'instance']);
-        });
+                $table->primary(['identifier', 'instance']);
+            });
+        }
     }
     /**
      * Reverse the migrations.
