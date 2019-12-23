@@ -363,6 +363,7 @@ class Cart
             'content' => serialize($content)
         ]);
 
+        //$this->events->fire('cart.stored'); depricated
         $this->events->dispatch('cart.stored');
     }
 
