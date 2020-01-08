@@ -368,7 +368,7 @@ The cart also has events build in. There are five events available for you to li
 | cart.added    | When an item was added to the cart.      | The `CartItem` that was added.   |
 | cart.updated  | When an item in the cart was updated.    | The `CartItem` that was updated. |
 | cart.removed  | When an item is removed from the cart.   | The `CartItem` that was removed. |
-| cart.stored   | When the content of a cart was stored.   | -                                |
+| cart.stored   | When the content of a cart was stored.   | The `Cart` that was stored.      |
 | cart.restored | When the content of a cart was restored. | -                                |
 
 ## Example

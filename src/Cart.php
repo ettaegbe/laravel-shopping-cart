@@ -3,6 +3,7 @@
 namespace Icemix\LaravelShoppingCart;
 
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Session\SessionManager;
 use Illuminate\Database\DatabaseManager;
@@ -11,6 +12,9 @@ use Icemix\LaravelShoppingCart\Contracts\Buyable;
 use Icemix\LaravelShoppingCart\Exceptions\UnknownModelException;
 use Icemix\LaravelShoppingCart\Exceptions\InvalidRowIDException;
 use Icemix\LaravelShoppingCart\Exceptions\CartAlreadyStoredException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+
 
 class Cart
 {
@@ -25,7 +29,7 @@ class Cart
 
     /**
      * Instance of the event dispatcher.
-     * 
+     *
      * @var \Illuminate\Contracts\Events\Dispatcher
      */
     private $events;
@@ -37,6 +41,7 @@ class Cart
      */
     private $instance;
 
+    private $cart;
     /**
      * Cart constructor.
      *
@@ -103,7 +108,7 @@ class Cart
         }
 
         $content->put($cartItem->rowId, $cartItem);
-        
+
         $this->events->dispatch('cart.added', $cartItem);
 
         $this->session->put($this->instance, $content);
@@ -341,16 +346,60 @@ class Cart
     }
 
     /**
+     * Store the current instance of the cart.
+     *
+     * @param mixed $identifier
+     * @return void
+     */
+
+    private function loadCart(){
+
+        $cart =  Session::get($this->instance."_cart",null);
+        return $cart;
+
+    }
+    /**
      * Store an the current instance of the cart.
      *
      * @param mixed $identifier
      * @return void
      */
-    public function store($identifier)
+    public function store()
     {
+        $this->cart = $this->loadCart();
+        $new = false;
+        if(!$this->cart){
+            $new = true;
+            $this->cart = new \Icemix\LaravelShoppingCart\Models\Cart();
+        }
+
         $content = $this->getContent();
-        
-        
+
+        $this->cart->user_id = Auth::id();
+        $this->cart->total = $this->total();
+        $this->cart->status = 0;
+        $this->cart->content =serialize($content);
+        $this->cart->identifier = time();
+        $this->cart->instance = $this->instance;
+        $this->cart->save();
+
+
+        $cartId = $this->cart->id;
+        Session::put($this->instance."_cart",$this->cart);
+
+        $this->events->dispatch('cart.stored');
+
+    }
+
+    /*public function store($identifier)
+    {
+
+        $rows = DB::table($this->getTableName())->select()->get();
+        dd(Auth::id());
+
+        $content = $this->getContent();
+
+
         $this->getConnection()
              ->table($this->getTableName())
              ->where('identifier', $identifier)
@@ -358,14 +407,14 @@ class Cart
 
 
         $this->getConnection()->table($this->getTableName())->insert([
+            'user_id' => Auth::id(),
             'identifier' => $identifier,
             'instance' => $this->currentInstance(),
             'content' => serialize($content)
         ]);
 
-        //$this->events->fire('cart.stored'); depricated
         $this->events->dispatch('cart.stored');
-    }
+    }*/
 
     /**
      * Restore the cart with the given identifier.
@@ -399,11 +448,11 @@ class Cart
         $this->session->put($this->instance, $content);
 
         $this->instance($currentInstance);
-       
+
     }
 
-    
-    
+
+
     /**
      * Deletes the stored cart with given identifier
      *
@@ -411,13 +460,17 @@ class Cart
      */
     protected function deleteStoredCart($identifier) {
         $this->getConnection()
-             ->table($this->getTableName())
-             ->where('identifier', $identifier)
-             ->delete();
+            ->table($this->getTableName())
+            ->where('identifier', $identifier)
+            ->delete();
     }
-    
-    
-    
+    public function clearCart() {
+        Session::remove($this->instance);
+        Session::remove($this->instance."_cart");
+    }
+
+
+
     /**
      * Magic method to make accessing the total, tax and subtotal properties possible.
      *
