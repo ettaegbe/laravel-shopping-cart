@@ -371,6 +371,7 @@ class Cart
         if(!$this->cart){
             $new = true;
             $this->cart = new \Icemix\LaravelShoppingCart\Models\Cart();
+            $this->cart->setTable($this->getTableName());
         }
 
         $content = $this->getContent();
@@ -429,7 +430,7 @@ class Cart
         }
 
         $stored = $this->getConnection()->table($this->getTableName())
-            ->where('identifier', $identifier)->first();
+            ->where('id', $identifier)->first();
 
         $storedContent = unserialize($stored->content);
 
@@ -461,7 +462,7 @@ class Cart
     protected function deleteStoredCart($identifier) {
         $this->getConnection()
             ->table($this->getTableName())
-            ->where('identifier', $identifier)
+            ->where('id', $identifier)
             ->delete();
     }
     public function clearCart() {
