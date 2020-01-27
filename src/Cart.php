@@ -379,7 +379,7 @@ class Cart
         $this->cart->user_id = Auth::id();
         $this->cart->total = $this->total();
         $this->cart->status = 0;
-        $this->cart->content =serialize($content);
+        $this->cart->content = serialize($content);
         $this->cart->identifier = time();
         $this->cart->instance = $this->instance;
         $this->cart->save();
@@ -388,7 +388,8 @@ class Cart
         $cartId = $this->cart->id;
         Session::put($this->instance."_cart",$this->cart);
 
-        $this->events->dispatch('cart.stored');
+        $this->cart->content = $content;
+        $this->events->dispatch('cart.stored',$this->cart);
 
     }
 
