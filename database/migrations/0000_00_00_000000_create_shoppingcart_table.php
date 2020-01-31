@@ -18,6 +18,7 @@ class CreateShoppingcartTable extends Migration
                 $table->string('instance');
                 $table->integer('status')->default(0)->nullable();
                 $table->integer('user_id')->nullable();
+                $table->double('total',8,2)->nullable();
                 $table->longText('content');
                 //$table->index(['identifier', 'instance']);
             });
@@ -29,6 +30,7 @@ class CreateShoppingcartTable extends Migration
                 $table->integer('status')->default(0)->nullable();
                 $table->integer('user_id')->nullable();
                 $table->longText('content');
+                $table->double('total',8,2)->nullable();
                 $table->nullableTimestamps();
                 $table->primary(['identifier', 'instance']);
             });
