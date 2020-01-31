@@ -387,7 +387,7 @@ class Cart
         $content = $this->getContent();
 
         $this->cart->user_id = Auth::id();
-        $this->cart->total = $this->total();
+        $this->cart->total = $this->totalSavable();
         $this->cart->status = 0;
         $this->cart->content = serialize($content);
         $this->cart->identifier = time();
